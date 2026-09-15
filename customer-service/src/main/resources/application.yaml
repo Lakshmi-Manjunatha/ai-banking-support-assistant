@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: customer-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_banking_support
+    username: postgres
+    password: postgres
+
+    flyway:
+      enabled: true
+      baseline-on-migrate: true
+
+    hibernate:
+      sql-dialect: postgres
