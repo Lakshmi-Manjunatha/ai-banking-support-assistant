@@ -14,9 +14,7 @@ public record CustomerRequest (
     String email,
     @NotBlank
     String password,
-
+    String status,
     @NotBlank
-    String accountType,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt) {
+    String accountType) {
 }
