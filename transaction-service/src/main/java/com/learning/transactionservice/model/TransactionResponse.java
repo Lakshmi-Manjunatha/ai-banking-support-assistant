@@ -2,7 +2,6 @@ package com.learning.transactionservice.model;
 
 import com.learning.transactionservice.enums.TransactionStatus;
 import com.learning.transactionservice.enums.TransactionType;
-import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
