@@ -5,19 +5,17 @@ import com.learning.customerservice.model.CustomerRequest;
 import com.learning.customerservice.model.CustomerResponse;
 import com.learning.customerservice.service.CustomerService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/customer")
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
-
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
 
     @PostMapping("/")
     public ResponseEntity<CreateCustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest customer) {

@@ -19,6 +19,11 @@ public class GlobalExceptionHandler {
            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<String> handelCustomerNotFoundExceptions(AccountNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
