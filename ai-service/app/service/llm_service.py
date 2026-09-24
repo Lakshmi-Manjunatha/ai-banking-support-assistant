@@ -5,13 +5,13 @@ from google import genai
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
-model = os.getenv("GEMINI_MODEL_NAME")
+model = os.getenv("GEMINI_LLM_MODEL_NAME")
 
 if not api_key:
     raise ValueError("GEMINI_API_KEY is not configured")
 
 if not model:
-    raise ValueError("GEMINI_MODEL_NAME is not configured")
+    raise ValueError("GEMINI_LLM_MODEL_NAME is not configured")
 
 client = genai.Client(api_key=api_key)
 
