@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-from app.db.database import SessionLocal
 from app.db.models.document_chunk import DocumentChunk
 from app.db.repository.document_chunk_repository import save_embeddings
 from app.rag import chunker, embedding_service

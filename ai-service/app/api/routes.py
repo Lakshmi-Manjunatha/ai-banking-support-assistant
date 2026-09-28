@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.model.chat import AskRequest, AskResponse
-from app.service.llm_service import  ask_llm
+from app.service.ask_service import retrieve_answer
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ def health():
 
 @router.post("/ask", response_model= AskResponse)
 def ask(request: AskRequest):
-    llm_response = ask_llm(request.question)
+    llm_response = retrieve_answer(request.question)
     return AskResponse(
         answer=llm_response
     )
