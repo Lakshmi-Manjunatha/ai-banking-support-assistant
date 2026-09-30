@@ -50,7 +50,9 @@ FLOW 2 — happens when user asks a question
 
 ### **To run this application locally :**
 
-`run : uvicorn app.main:app --reload`
+1.  `sudo apt install python3 python3-pip python3-venv`
+2.  `python -m pip install -r requirements.txt`
+3.  `run : uvicorn app.main:app --reload`
 
 
 #### Test link :

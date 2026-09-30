@@ -7,3 +7,11 @@ sqlalchemy
 alembic
 psycopg[binary]
 pgvector
+
+
+langchain
+langchain-community
+pypdf
+docx2txt
+langchain-google-genai
+langchain-postgres
