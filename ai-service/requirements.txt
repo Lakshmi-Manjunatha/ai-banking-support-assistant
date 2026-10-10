@@ -15,3 +15,5 @@ pypdf
 docx2txt
 langchain-google-genai
 langchain-postgres
+
+pytest
