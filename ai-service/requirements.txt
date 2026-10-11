@@ -17,3 +17,6 @@ langchain-google-genai
 langchain-postgres
 
 pytest
+
+#JWT
+PyJWT[crypto]

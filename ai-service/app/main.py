@@ -22,6 +22,7 @@ def http_exception_handler(request: Request, exc: StarletteHTTPException):
             "success": False,
             "error": exc.detail,
         },
+        headers=exc.headers,
     )
 
 

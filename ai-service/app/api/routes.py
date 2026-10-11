@@ -1,10 +1,11 @@
 import logging
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.model.chat import AskRequest, AskResponse
+from app.security.auth import require_rag_ask
 from app.service.ask_service import retrieve_answer
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 logger = logging.getLogger(__name__)
 
 
@@ -15,10 +16,10 @@ def health():
 
 
 @router.post("/ask", response_model= AskResponse)
-def ask(request: AskRequest):
+def ask(request: AskRequest, dependencies = Depends(require_rag_ask)):
     logger.info("Ask request received: question_length=%s", len(request.question))
-    llm_response = retrieve_answer(request.question)
+    response = retrieve_answer(request.question)
     logger.info("Ask request completed")
     return AskResponse(
-        answer=llm_response
+        answer=response
     )
