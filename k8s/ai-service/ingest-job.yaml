@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: banking-documents-ingestion
+  labels:
+    app: banking-ai
+    component: ingestion
+
+spec:
+  backoffLimit: 0
+
+  template:
+    metadata:
+      labels:
+        app: banking-ai
+        component: ingestion
+
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: ingestion
+          image: apr162020/ai-banking-service:1.1
+          imagePullPolicy: IfNotPresent
+
+          command: ["python"]
+          args: ["-m", "app.lagchain_rag.ingest"]
+
+          envFrom:
+            - configMapRef:
+                name: banking-ai-config
+            - secretRef:
+                name: banking-ai-secret
+
+          volumeMounts:
+            - name: documents
+              mountPath: /app/documents
+              readOnly: true
+
+      volumes:
+        - name: documents
+          persistentVolumeClaim:
+            claimName: banking-documents-pvc
