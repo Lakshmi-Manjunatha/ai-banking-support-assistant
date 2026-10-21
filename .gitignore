@@ -1,0 +1,18 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.idea/
+*.iml
+
+**/.idea/
+# IntelliJ IDEA project files for Java services
+/customer-service/**/.idea/
+/transaction-service/**/.idea/
+
+# Kubernetes secrets
+**/*secret.yaml
+**/*secrets.yaml
+
+/learning_doc/
+/test_documents/
