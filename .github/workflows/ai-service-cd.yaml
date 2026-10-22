@@ -14,31 +14,48 @@ jobs:
     runs-on: [self-hosted, Windows, X64]
 
     steps:
-      # Step 1: Download repository files
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Verify connection to local kind cluster
+      # Step 2: Verify Kubernetes cluster connection
       - name: Verify Kubernetes connection
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           kubectl config current-context
-          kubectl get nodes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      # Step 3: Replace placeholder image with CI-built Docker image
+          kubectl get nodes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      # Step 3: Replace placeholder with CI-built Docker image
       - name: Configure Docker image
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          Set-Location k8s/overlays/preview
+          $file = "k8s/overlays/preview/kustomization.yaml"
 
-          kustomize edit set image "ai-banking-service=${env:DOCKERHUB_USERNAME}/ai-banking-service:${env:IMAGE_TAG}"
+          $content = Get-Content -Path $file -Raw
 
-          kubectl kustomize .
+          $content = $content.Replace(
+            "placeholder/ai-banking-service",
+            "${env:DOCKERHUB_USERNAME}/ai-banking-service"
+          )
 
-      # Step 4: Deploy into preview namespace
+          $content = $content.Replace(
+            "preview-placeholder",
+            $env:IMAGE_TAG
+          )
+
+          Set-Content -Path $file -Value $content
+
+          Write-Host "Generating preview Kubernetes manifests..."
+          kubectl kustomize k8s/overlays/preview
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      # Step 4: Deploy application to preview namespace
       - name: Deploy to Kubernetes
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
@@ -48,8 +65,9 @@ jobs:
           kubectl rollout status deployment/ai-service-deployment -n ai-service-preview --timeout=120s
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      # Step 5: Display deployed resources
+      # Step 5: Verify deployed Kubernetes resources
       - name: Verify deployment
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           kubectl get deployments,pods,services -n ai-service-preview
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
