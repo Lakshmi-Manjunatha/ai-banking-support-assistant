@@ -9,13 +9,9 @@ jobs:
 
     steps:
       - name: Check Kubernetes context
-        shell: pwsh -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: kubectl config current-context
 
       - name: Check Kubernetes nodes
-        shell: pwsh -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: kubectl get nodes
-
-      - name: Check preview namespace
-        shell: pwsh -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
-        run: kubectl get namespace ai-service-preview
