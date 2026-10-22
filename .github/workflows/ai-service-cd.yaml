@@ -1,3 +1,4 @@
+
 name: AI Service CD
 
 on:
@@ -13,30 +14,41 @@ jobs:
     runs-on: [self-hosted, Windows, X64]
 
     steps:
+      # Step 1: Download repository files
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Verify connection to local kind cluster
       - name: Verify Kubernetes connection
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           kubectl config current-context
           kubectl get nodes
 
+      # Step 3: Replace placeholder image with CI-built Docker image
       - name: Configure Docker image
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          cd k8s/overlays/preview
-          kubectl kustomize edit set image "ai-banking-service=$env:DOCKERHUB_USERNAME/ai-banking-service:$env:IMAGE_TAG"
+          Set-Location k8s/overlays/preview
 
+          kustomize edit set image "ai-banking-service=${env:DOCKERHUB_USERNAME}/ai-banking-service:${env:IMAGE_TAG}"
+
+          kubectl kustomize .
+
+      # Step 4: Deploy into preview namespace
       - name: Deploy to Kubernetes
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           kubectl apply -k k8s/overlays/preview
-          kubectl rollout status deployment/ai-service-deployment -n ai-service-preview --timeout=120s
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+          kubectl rollout status deployment/ai-service-deployment -n ai-service-preview --timeout=120s
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      # Step 5: Display deployed resources
       - name: Verify deployment
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
