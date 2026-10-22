@@ -1,0 +1,21 @@
+name: AI Service CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-kubernetes:
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+      - name: Check Kubernetes context
+        shell: powershell
+        run: kubectl config current-context
+
+      - name: Check Kubernetes nodes
+        shell: powershell
+        run: kubectl get nodes
+
+      - name: Check preview namespace
+        shell: powershell
+        run: kubectl get namespace ai-service-preview
