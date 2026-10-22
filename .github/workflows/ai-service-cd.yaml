@@ -2,16 +2,42 @@ name: AI Service CD
 
 on:
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Existing Docker Hub image tag built by CI"
+        required: true
+        type: string
 
 jobs:
-  verify-kubernetes:
+  deploy-preview:
     runs-on: [self-hosted, Windows, X64]
 
     steps:
-      - name: Check Kubernetes context
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
-        run: kubectl config current-context
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Check Kubernetes nodes
+      - name: Verify Kubernetes connection
         shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
-        run: kubectl get nodes
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+
+      - name: Configure Docker image
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          cd k8s/overlays/preview
+          kubectl kustomize edit set image "ai-banking-service=$env:DOCKERHUB_USERNAME/ai-banking-service:$env:IMAGE_TAG"
+
+      - name: Deploy to Kubernetes
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          kubectl apply -k k8s/overlays/preview
+          kubectl rollout status deployment/ai-service-deployment -n ai-service-preview --timeout=120s
+
+      - name: Verify deployment
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          kubectl get deployments,pods,services -n ai-service-preview

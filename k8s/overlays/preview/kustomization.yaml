@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-service-preview
+
+resources:
+  - ../../ai-service
+  - ../../config
+
+images:
+  - name: ai-banking-service
+    newName: placeholder/ai-banking-service
+    newTag: preview-placeholder
